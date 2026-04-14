@@ -1,244 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>💖 A Little Puzzle 💖</title>
-  <style>
-    body {
-      font-family: "Courier New";
-      text-align: center;
-      background-color: #ff6666;
-    }
-
-    #puzzle {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-
-    .slot {
-      width: 170px;
-      height: 170px;
-      margin: 10px;
-      border: 2px dashed #ff99cc;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      background-color: rgba(255, 153, 204, 0.1);
-    }
-
-    .slot-number {
-      position: absolute;
-      top: 5px;
-      left: 5px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #ff6666;
-    }
-
-    #pieces {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-
-    .slot.drag-over {
-      background-color: rgba(255, 153, 204, 0.3);
-    }
-
-    .piece img {
-      width: 160px;
-      height: 160px;
-      object-fit: cover;
-      display: block;
-      border-radius: 8px;
-    }
-
-    .confetti-piece {
-      position: fixed;
-      top: 90vh;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0.9;
-      animation: confetti-burst 3.2s ease-out forwards;
-    }
-
-    @keyframes confetti-burst {
-      0% {
-        transform: translate(0, 0) rotate(0deg);
-        opacity: 1;
-      }
-      40% {
-        transform: translate(var(--dx, 0), -70vh) rotate(720deg);
-        opacity: 0.95;
-      }
-      100% {
-        transform: translate(calc(var(--dx, 0) * 1.4), -140vh) rotate(1080deg);
-        opacity: 0;
-      }
-    }
-
-    #message {
-      display: none;
-      font-size: 48px;
-      font-weight: bold;
-      margin-top: 30px;
-    }
-  </style>
-</head>
-<body>
-
-<h1>Ryan! I have a question for you!<br> Drag the pieces into chronological order to see it!💕</h1>
-
-<div id="pieces">
-<div class="piece" draggable="true" data-num="5">
-  <img src="img5.jpg">
-</div>
-
-<div class="piece" draggable="true" data-num="2">
-  <img src="img2.jpg">
-</div>
-
-<div class="piece" draggable="true" data-num="4">
-  <img src="img4.jpg">
-</div>
-
-<div class="piece" draggable="true" data-num="1">
-  <img src="img1.jpg">
-</div>
-
-<div class="piece" draggable="true" data-num="3">
-  <img src="img3.jpg">
-</div>
-</div>
-
-<div id="puzzle">
-<div class="slot" data-position="1">
-  <div class="slot-number">1</div>
-</div>
-
-<div class="slot" data-position="2">
-  <div class="slot-number">2</div>
-</div>
-
-<div class="slot" data-position="3">
-  <div class="slot-number">3</div>
-</div>
-
-<div class="slot" data-position="4">
-  <div class="slot-number">4</div>
-</div>
-
-<div class="slot" data-position="5">
-  <div class="slot-number">5</div>
-</div>
-</div>
-
-<button id="confirm-btn" style="display: block; margin: 20px auto; padding: 10px 20px; font-size: 18px; background-color: #ff99cc; border: none; border-radius: 5px; cursor: pointer;">Confirm Order</button>
-
-<div id="message">
-  &#x1F618; Will you go to PROMSI with me? 💃 &#x1F618; <br> May 14th 6:00pm
-</div>
-
 <script>
-  const correctOrder = [1, 2, 3, 4, 5];
-  let draggedElement = null;
-
-  const pieces = document.querySelectorAll('.piece');
-  const puzzle = document.getElementById('puzzle');
-  const slots = document.querySelectorAll('.slot');
-  const confirmBtn = document.getElementById('confirm-btn');
-
-  pieces.forEach(piece => {
-    piece.addEventListener('dragstart', dragStart);
-    piece.addEventListener('dragend', dragEnd);
+  document.addEventListener('dragover', function(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
   });
 
-  slots.forEach(slot => {
-    slot.addEventListener('dragover', dragOver);
-    slot.addEventListener('drop', drop);
-    slot.addEventListener('dragenter', dragEnter);
-    slot.addEventListener('dragleave', dragLeave);
+  document.addEventListener('drop', function(event) {
+    event.preventDefault();
+    // Handle the drop logic here
   });
 
-  confirmBtn.addEventListener('click', confirmOrder);
+  // Mobile touch event support
+  let touchStartX = 0;
+  let touchStartY = 0;
 
-  function dragStart(e) {
-    draggedElement = this;
-    this.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-  }
+  document.addEventListener('touchstart', function(event) {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+  });
 
-  function dragEnd(e) {
-    this.classList.remove('dragging');
-  }
+  document.addEventListener('touchmove', function(event) {
+    event.preventDefault();
+    const touchX = event.touches[0].clientX;
+    const touchY = event.touches[0].clientY;
 
-  function dragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  }
+    // Map touch movements to drop logic
+    // ... (Implement the drop logic based on touchX and touchY)
+  });
 
-  function drop(e) {
-    e.preventDefault();
-    if (draggedElement) {
-      const existingPiece = this.querySelector('.piece');
-      if (existingPiece && existingPiece !== draggedElement) {
-        // Swap pieces
-        const draggedParent = draggedElement.parentElement;
-        draggedParent.appendChild(existingPiece);
-        this.appendChild(draggedElement);
-      } else if (!existingPiece) {
-        this.appendChild(draggedElement);
-      }
-    }
-  }
-
-  function dragEnter(e) {
-    e.preventDefault();
-    this.classList.add('drag-over');
-  }
-
-  function dragLeave(e) {
-    this.classList.remove('drag-over');
-  }
-
-  function confirmOrder() {
-    let isCorrect = true;
-    slots.forEach(slot => {
-      const piece = slot.querySelector('.piece');
-      if (!piece || parseInt(piece.dataset.num) !== parseInt(slot.dataset.position)) {
-        isCorrect = false;
-      }
-    });
-    if (isCorrect) {
-      document.getElementById("message").style.display = "block";
-      for (let i = 0; i < 5; i++) {
-        setTimeout(() => showConfetti(16), i * 500);
-      }
-    } else {
-      alert("Oops! That's not the right order. Try again 😊");
-    }
-  }
-
-  function showConfetti(count = 80) {
-    const colors = ["#ff4da6", "#ffd24d", "#5cd1ff", "#7d5cff", "#80ff80"];
-    for (let i = 0; i < count; i++) {
-      const confetti = document.createElement("div");
-      confetti.className = "confetti-piece";
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      confetti.style.left = `${Math.random() * 100}%`;
-      confetti.style.setProperty("--dx", `${(Math.random() - 0.5) * 120}vw`);
-      confetti.style.animationDuration = `${1800 + Math.random() * 1200}ms`;
-      confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-      document.body.appendChild(confetti);
-      confetti.addEventListener("animationend", () => confetti.remove());
-    }
-  }
+  document.addEventListener('touchend', function(event) {
+    // Handle the end of the touch event and finalize the drop
+  });
 </script>
-
-</body>
-</html>
